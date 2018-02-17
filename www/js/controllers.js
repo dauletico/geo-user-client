@@ -16,7 +16,18 @@ angular.module('starter.controllers', [])
                 $scope.data = JSON.stringify(msg);
                 console.log('AAAAAAAAAAA')
                 console.log(msg)
-                // ble.write(device.id, uuid, '', data, success, failure);
+                for (var i = 0; i < msg.characteristics.length; i++) {
+                  let characteristic = msg.characteristics[i];
+                  if(characteristic.characteristic.startsWith('14444444')) {
+                    $scope.message += 'Now, writing to characteristic';
+                    console.log('WRITING');
+                    ble.write(device.id, uuid, characteristic.characteristic, stringToBytes('123454456456546'), (success) => {
+                      console.log('SUCCEEEEEDDDED')
+                    }, (failure) => {
+                      console.log('FAILUREE')
+                    });
+                  }
+                }
               }, (err) => {
                 $scope.data = JSON.stringify(err);
               });
@@ -57,3 +68,12 @@ angular.module('starter.controllers', [])
     enableFriends: true
   };
 });
+
+function stringToBytes(string) {
+   var array = new Uint8Array(string.length);
+   for (var i = 0, l = string.length; i < l; i++) {
+       array[i] = string.charCodeAt(i);
+    }
+    return array.buffer;
+}
+
