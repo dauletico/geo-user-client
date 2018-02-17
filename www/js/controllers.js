@@ -1,6 +1,6 @@
 angular.module('starter.controllers', [])
 
-.controller('DashCtrl', function($scope, ble, $ionicPlatform) {
+.controller('DashCtrl', function($scope, $ionicPlatform) {
   $ionicPlatform.ready(() => {
       $scope.deviceToken = '123454456456546';
       if (ble) {
