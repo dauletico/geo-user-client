@@ -5,7 +5,10 @@ angular.module('starter.controllers', [])
   var uuid;
 
   $ionicPlatform.ready(() => {
-      $scope.deviceToken = '123454456456546';
+      if (!localStorage.uuid) {
+        localStorage.uuid = guid();
+      }
+      $scope.deviceToken = localStorage.uuid;
       $scope.scan = () => {
         discoverDevice(ble, $scope);
       };
@@ -49,7 +52,7 @@ angular.module('starter.controllers', [])
         let characteristic = msg.characteristics[i];
         if(characteristic.characteristic.startsWith('14444444')) {
           $scope.message = $scope.message + 'Now, writing to characteristic';
-          ble.write(device.id, uuid, characteristic.characteristic, stringToBytes('123454456456546'), (success) => {
+          ble.write(device.id, uuid, characteristic.characteristic, stringToBytes(localStorage.uuid), (success) => {
             console.log(success);
             $scope.data = JSON.stringify(success);
           }, (failure) => {
@@ -59,6 +62,16 @@ angular.module('starter.controllers', [])
     }, (err) => {
       $scope.data = JSON.stringify(err);
     });
+  }
+
+  function guid() {
+    function s4() {
+      return Math.floor((1 + Math.random()) * 0x10000)
+        .toString(16)
+        .substring(1);
+    }
+    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+      s4() + '-' + s4() + s4() + s4();
   }
 
   function stringToBytes(string) {
