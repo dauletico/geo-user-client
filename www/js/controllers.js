@@ -1,6 +1,22 @@
 angular.module('starter.controllers', [])
 
-.controller('DashCtrl', function($scope) {})
+.controller('DashCtrl', function($scope, ble, $ionicPlatform) {
+  $ionicPlatform.ready(() => {
+      $scope.deviceToken = '123454456456546';
+      if (ble) {
+        console.log('got ble, starting scan')
+        ble.scan([], 5, (device) => {
+          console.log('testtt')
+            $scope.message = JSON.stringify(device);
+        }, (msg) => {
+          $scope.message = JSON.stringify(msg);
+        });
+      } else {
+        $scope.message = 'BLE not available.';
+      }
+
+  });
+})
 
 .controller('ChatsCtrl', function($scope, Chats) {
   // With the new view caching in Ionic, Controllers are only called
