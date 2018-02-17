@@ -4,11 +4,26 @@ angular.module('starter.controllers', [])
   $ionicPlatform.ready(() => {
       $scope.deviceToken = '123454456456546';
       if (ble) {
-        console.log('got ble, starting scan')
         ble.scan([], 5, (device) => {
-          console.log('testtt')
-            $scope.message = JSON.stringify(device);
+          // on success
+          if(device.advertising && device.advertising.kCBAdvDataServiceUUIDs && device.advertising.kCBAdvDataServiceUUIDs.length > 0) {
+            let uuid = device.advertising.kCBAdvDataServiceUUIDs[0];
+            // check if device is our peripheral
+            if(uuid.startsWith('15555555')) {
+              $scope.message = 'Got device with id: ' + device.id + '. Connecting...';
+              console.log(device.id);
+              ble.connect(device.id, (msg) => {
+                $scope.data = JSON.stringify(msg);
+                console.log('AAAAAAAAAAA')
+                console.log(msg)
+                // ble.write(device.id, uuid, '', data, success, failure);
+              }, (err) => {
+                $scope.data = JSON.stringify(err);
+              });
+            }
+          }
         }, (msg) => {
+          // Failure
           $scope.message = JSON.stringify(msg);
         });
       } else {
