@@ -25,10 +25,10 @@ angular.module('starter.controllers', [])
     ble.scan([], 3, (device) => {
       // on success
       if(device.advertising && device.advertising.kCBAdvDataServiceUUIDs && device.advertising.kCBAdvDataServiceUUIDs.length > 0) {
-        uuid = device.advertising.kCBAdvDataServiceUUIDs[0];
         // check if device is our peripheral
         if(isScanDone) return;
-        if(uuid.startsWith('15555555')) {
+        if(device.advertising.kCBAdvDataServiceUUIDs[0].startsWith('15555555')) {
+          uuid = device.advertising.kCBAdvDataServiceUUIDs[0];
           discoveredDevice = device;
           $scope.message = 'Got device with id: ' + device.id + '. Would you like to conenct?';
           isScanDone = true;
