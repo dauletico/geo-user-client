@@ -3,11 +3,17 @@ angular.module('starter.controllers', [])
 .controller('DashCtrl', function($scope, $ionicPlatform) {
   var discoveredDevice;
   var uuid;
+  var responseString;
+  var numCallbackTimes;
 
   $ionicPlatform.ready(() => {
       if (!localStorage.uuid) {
         localStorage.uuid = guid();
       }
+      if (!localStorage.proofs) {
+        localStorage.proofs = '[]';
+      }
+      console.log(localStorage.proofs);
       $scope.deviceToken = localStorage.uuid;
       $scope.scan = () => {
         discoverDevice(ble, $scope);
@@ -52,10 +58,29 @@ angular.module('starter.controllers', [])
         let characteristic = msg.characteristics[i];
         if(characteristic.characteristic.startsWith('14444444')) {
           $scope.message = $scope.message + 'Now, writing to characteristic';
-          ble.write(device.id, uuid, characteristic.characteristic, stringToBytes(localStorage.uuid), (success) => {
-            console.log(success);
-            $scope.data = JSON.stringify(success);
+          numCallbackTimes = 0;
+          responseString = '';
+          ble.startNotification(device.id, uuid, characteristic.characteristic, (buffer) => {
+            numCallbackTimes++;
+            responseString += new TextDecoder("utf-8").decode(new Uint8Array(buffer));
+            if (numCallbackTimes == 2) {
+              // gathered everything
+              let parts = responseString.split('|');
+              let proofs = JSON.parse(localStorage.proofs);
+              proofs.push({
+                signature: parts[0],
+                message: localStorage.uuid + '|' + parts[1],
+                address: parts[2]
+              });
+              localStorage.proofs = JSON.stringify(proofs);
+              console.log(JSON.stringify(localStorage.proofs));
+            }
           }, (failure) => {
+          });
+          ble.write(device.id, uuid, characteristic.characteristic, stringToBytes(localStorage.uuid), (success) => {
+            console.log('success')
+          }, (failure) => {
+            console.log('failed')
           });
         }
       }
