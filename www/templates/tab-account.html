@@ -1,8 +1,8 @@
-<ion-view view-title="Account">
+<ion-view view-title="Settings">
   <ion-content>
     <ion-list>
-    <ion-toggle  ng-model="settings.enableFriends">
-        Enable Friends
+    <ion-toggle ng-model="anonymizeVerifications" ng-change="updateVerifications()">
+        Anonymize Transactions
     </ion-toggle>
     </ion-list>
   </ion-content>

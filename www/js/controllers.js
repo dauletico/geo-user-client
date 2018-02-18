@@ -1,6 +1,6 @@
 angular.module('starter.controllers', [])
 
-.controller('DashCtrl', function($scope, $ionicPlatform) {
+.controller('DashCtrl', function($scope, $ionicPlatform, $interval) {
   var discoveredDevice;
   var uuid;
   var responseString;
@@ -13,11 +13,15 @@ angular.module('starter.controllers', [])
       if (!localStorage.proofs) {
         localStorage.proofs = '[]';
       }
+      if (!localStorage.anonymizeVerifications) {
+        localStorage.anonymizeVerifications = 0;
+      }
       console.log(localStorage.proofs);
       $scope.deviceToken = localStorage.uuid;
       $scope.scan = () => {
         discoverDevice(ble, $scope);
       };
+      console.log(localStorage.anonymizeVerifications);
 
       $scope.connect = () => {
         connectToDevice(ble, discoveredDevice, uuid, $scope);
@@ -50,7 +54,6 @@ angular.module('starter.controllers', [])
     
   }
 
-
   function connectToDevice(ble, device, uuid, $scope) {
     ble.connect(device.id, (msg) => {
       $scope.message = $scope.message + 'Connected...';
@@ -77,7 +80,7 @@ angular.module('starter.controllers', [])
             }
           }, (failure) => {
           });
-          ble.write(device.id, uuid, characteristic.characteristic, stringToBytes(localStorage.uuid), (success) => {
+          ble.write(device.id, uuid, characteristic.characteristic, stringToBytes(localStorage.anonymizeVerifications + '|' + localStorage.uuid), (success) => {
             console.log('success')
           }, (failure) => {
             console.log('failed')
@@ -125,8 +128,9 @@ angular.module('starter.controllers', [])
   $scope.chat = Chats.get($stateParams.chatId);
 })
 
-.controller('AccountCtrl', function($scope) {
-  $scope.settings = {
-    enableFriends: true
+.controller('AccountCtrl', function($scope, $ionicPlatform, ) {
+  $scope.anonymizeVerifications = localStorage.anonymizeVerifications == 1;
+  $scope.updateVerifications = function() {
+    localStorage.anonymizeVerifications = $scope.anonymizeVerifications ? 0 : 1;
   };
 });
