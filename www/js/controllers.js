@@ -13,7 +13,7 @@ angular.module('starter.controllers', [])
       if (!localStorage.proofs) {
         localStorage.proofs = '[]';
       }
-      if (!localStorage.anonymizeVerifications) {
+      if (localStorage.anonymizeVerifications == null) {
         localStorage.anonymizeVerifications = 0;
       }
       console.log(localStorage.proofs);
@@ -43,7 +43,7 @@ angular.module('starter.controllers', [])
         if(device.advertising.kCBAdvDataServiceUUIDs[0].startsWith('15555555')) {
           uuid = device.advertising.kCBAdvDataServiceUUIDs[0];
           discoveredDevice = device;
-          $scope.message = 'Got device with id: ' + device.id + '. Would you like to conenct?';
+          $scope.message = 'Found device matching protocol: ' + device.name + '. Would you like to conenct?';
           isScanDone = true;
         }
       }
@@ -55,12 +55,11 @@ angular.module('starter.controllers', [])
   }
 
   function connectToDevice(ble, device, uuid, $scope) {
+    $scope.message = 'Successfully checked in with device.';
     ble.connect(device.id, (msg) => {
-      $scope.message = $scope.message + 'Connected...';
       for (var i = 0; i < msg.characteristics.length; i++) {
         let characteristic = msg.characteristics[i];
         if(characteristic.characteristic.startsWith('14444444')) {
-          $scope.message = $scope.message + 'Now, writing to characteristic';
           numCallbackTimes = 0;
           responseString = '';
           ble.startNotification(device.id, uuid, characteristic.characteristic, (buffer) => {
@@ -130,6 +129,7 @@ angular.module('starter.controllers', [])
 
 .controller('AccountCtrl', function($scope, $ionicPlatform, ) {
   $scope.anonymizeVerifications = localStorage.anonymizeVerifications == 1;
+  $scope.token = localStorage.uuid;
   $scope.updateVerifications = function() {
     localStorage.anonymizeVerifications = $scope.anonymizeVerifications ? 0 : 1;
   };
