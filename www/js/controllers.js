@@ -1,3 +1,6 @@
+var Web3 = require('web3');
+var web3 = new Web3();
+
 angular.module('starter.controllers', [])
 
 .controller('DashCtrl', function($scope, $ionicPlatform, $interval) {
@@ -7,9 +10,18 @@ angular.module('starter.controllers', [])
   var numCallbackTimes;
 
   $ionicPlatform.ready(() => {
-      if (!localStorage.uuid) {
-        localStorage.uuid = guid();
+      if (!localStorage.getItem('address')) {
+        var account = web3.eth.accounts.create();
+        localStorage.setItem('address', account.privateKey);
+        console.log('Generating new account...');
       }
+      else {
+        var private_key = localStorage.getItem('address');
+        account = web3.eth.accounts.wallet.add(private_key);
+        console.log('Loading existing account.');
+      }
+      $scope.address = account.address;
+      console.log(account)
       if (!localStorage.proofs) {
         localStorage.proofs = '[]';
       }
@@ -17,7 +29,7 @@ angular.module('starter.controllers', [])
         localStorage.anonymizeVerifications = 0;
       }
       console.log(localStorage.proofs);
-      $scope.deviceToken = localStorage.uuid;
+      $scope.deviceToken = localStorage.getItem('address');
       $scope.scan = () => {
         discoverDevice(ble, $scope);
       };
@@ -71,7 +83,7 @@ angular.module('starter.controllers', [])
               let proofs = JSON.parse(localStorage.proofs);
               proofs.push({
                 signature: parts[0],
-                message: localStorage.uuid + '|' + parts[1],
+                message: localStorage.getItem('address') + '|' + parts[1],
                 address: parts[2]
               });
               localStorage.proofs = JSON.stringify(proofs);
@@ -79,7 +91,7 @@ angular.module('starter.controllers', [])
             }
           }, (failure) => {
           });
-          ble.write(device.id, uuid, characteristic.characteristic, stringToBytes(localStorage.anonymizeVerifications + '|' + localStorage.uuid), (success) => {
+          ble.write(device.id, uuid, characteristic.characteristic, stringToBytes(localStorage.anonymizeVerifications + '|' + localStorage.getItem('address')), (success) => {
             console.log('success')
           }, (failure) => {
             console.log('failed')
@@ -129,7 +141,10 @@ angular.module('starter.controllers', [])
 
 .controller('AccountCtrl', function($scope, $ionicPlatform, ) {
   $scope.anonymizeVerifications = localStorage.anonymizeVerifications == 1;
-  $scope.token = localStorage.uuid;
+
+  var private_key = localStorage.getItem('address');
+  account = web3.eth.accounts.wallet.add(private_key);
+  $scope.address = account.address;
   $scope.updateVerifications = function() {
     localStorage.anonymizeVerifications = $scope.anonymizeVerifications ? 0 : 1;
   };

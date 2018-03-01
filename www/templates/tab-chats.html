@@ -1,7 +1,7 @@
 <ion-view view-title="Proofs">
   <ion-content>
     <ion-list>
-      <ion-item class="item-remove-animate" ng-repeat="proof in proofs" type="item-text-wrap">
+      <ion-item class="item-remove-animate" ng-repeat="proof in JSON.parse(localStorage.proofs)" type="item-text-wrap">
         <h2>{{proof.address}}</h2>
         <p>{{proof.signature}}</p>
         <p>{{proof.message}}</p>
