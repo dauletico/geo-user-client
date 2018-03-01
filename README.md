@@ -1,6 +1,6 @@
 # Geo User Client
 
-![logo](https://image.ibb.co/bwnLo7/geo_1_15.png)
+![logo](http://image.ibb.co/cd2E0x/geo_logo.png)
 
 The code for a Geo user client, allowing a user to interface with Nodes to generate a Proof of Location signature. Provides the option to either publicly broadcast the Proof of Location or store locally for later usage.
 
