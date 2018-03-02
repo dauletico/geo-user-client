@@ -1,6 +1,6 @@
 # Geo User Client
 
-![logo](http://image.ibb.co/cd2E0x/geo_logo.png)
+![logo](https://raw.githubusercontent.com/GeoProof/geoproof.github.io/master/img/geo_3.png)
 
 The code for a Geo user client, allowing a user to interface with Nodes to generate a Proof of Location signature. Provides the option to either publicly broadcast the Proof of Location or store locally for later usage.
 
